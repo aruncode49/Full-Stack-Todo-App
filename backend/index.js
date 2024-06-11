@@ -1,8 +1,10 @@
 require("dotenv").config();
 
 const express = require("express");
-const { createTodoSchema, updateTodoSchema } = require("./types");
 const mongoose = require("mongoose");
+
+const { createTodoSchema, updateTodoSchema } = require("./types");
+const { Todo } = require("./todo.model");
 
 const PORT = 8000;
 const app = express();
@@ -20,7 +22,7 @@ app.get("/", (req, res) => {
 });
 
 // create todo
-app.post("/create", (req, res) => {
+app.post("/create", async (req, res) => {
   const data = req.body;
   const parsedData = createTodoSchema.safeParse(data);
   if (!parsedData.success) {
@@ -28,13 +30,26 @@ app.post("/create", (req, res) => {
       msg: "Invalid Input Data",
     });
   }
+
+  // put data in db
+  const todo = await Todo.create({ ...data, completed: false });
+
+  res.status(201).json({
+    msg: "Todo created successfully!",
+    todo,
+  });
 });
 
 // get all todos
-app.get("/todos", (req, res) => {});
+app.get("/todos", async (req, res) => {
+  const todos = await Todo.find({});
+  res.status(200).json({
+    todos,
+  });
+});
 
 // update todo
-app.put("/update", (req, res) => {
+app.put("/update", async (req, res) => {
   const data = req.body;
   const parsedData = updateTodoSchema.safeParse(data);
   if (!parsedData.success) {
@@ -42,6 +57,16 @@ app.put("/update", (req, res) => {
       msg: "Invalid Input Data",
     });
   }
+
+  // update completed field
+  const updatedTodo = await Todo.findByIdAndUpdate(data.id, {
+    completed: true,
+  });
+
+  res.status(200).json({
+    msg: "Todo updated successfully!",
+    updatedTodo,
+  });
 });
 
 app.listen(PORT, (req, res) => {
