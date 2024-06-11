@@ -26,4 +26,6 @@ body {
 
 .todo button {
   cursor: pointer;
+  background-color: rgb(12, 205, 12);
+  padding: 4px 8px;
 }

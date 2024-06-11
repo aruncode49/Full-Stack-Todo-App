@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const { createTodoSchema, updateTodoSchema } = require("./types");
 const { Todo } = require("./todo.model");
@@ -10,6 +11,7 @@ const PORT = 8000;
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 // connect mongodb
 mongoose
@@ -32,11 +34,12 @@ app.post("/create", async (req, res) => {
   }
 
   // put data in db
-  const todo = await Todo.create({ ...data, completed: false });
+  const todo = await Todo.create({ ...data });
 
   res.status(201).json({
     msg: "Todo created successfully!",
     todo,
+    success: true,
   });
 });
 
@@ -44,6 +47,7 @@ app.post("/create", async (req, res) => {
 app.get("/todos", async (req, res) => {
   const todos = await Todo.find({});
   res.status(200).json({
+    success: true,
     todos,
   });
 });
@@ -65,6 +69,7 @@ app.put("/update", async (req, res) => {
 
   res.status(200).json({
     msg: "Todo updated successfully!",
+    success: true,
     updatedTodo,
   });
 });

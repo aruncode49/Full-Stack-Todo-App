@@ -2,40 +2,28 @@ import "./App.css";
 
 import CreateTodo from "./components/CreateTodo";
 import AllTodos from "./components/AllTodos";
+import { useEffect, useState } from "react";
 
 function App() {
-  const todos = [
-    {
-      _id: "1",
-      title: "title",
-      description: "description",
-      completed: false,
-    },
-    {
-      _id: "2",
-      title: "title",
-      description: "description",
-      completed: false,
-    },
-    {
-      _id: "3",
-      title: "title",
-      description: "description",
-      completed: false,
-    },
-    {
-      _id: "4",
-      title: "title",
-      description: "description",
-      completed: false,
-    },
-  ];
+  const [todos, setTodos] = useState([]);
+
+  async function getTodos() {
+    const res = await fetch("http://localhost:8000/todos");
+    const data = await res.json();
+    if (data.success) {
+      setTodos(data.todos);
+    }
+  }
+
+  useEffect(() => {
+    getTodos();
+  }, []);
 
   return (
     <div>
-      <CreateTodo />
+      <CreateTodo getTodos={getTodos} />
       <div className="alltodos">
-        <AllTodos todos={todos} />
+        <AllTodos todos={todos} getTodos={getTodos} />
       </div>
     </div>
   );
