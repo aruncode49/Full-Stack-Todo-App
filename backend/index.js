@@ -1,10 +1,19 @@
+require("dotenv").config();
+
 const express = require("express");
 const { createTodoSchema, updateTodoSchema } = require("./types");
+const mongoose = require("mongoose");
 
 const PORT = 8000;
 const app = express();
 
 app.use(express.json());
+
+// connect mongodb
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log(`Mongodb connected successfully!`))
+  .catch((err) => console.log(`Error in db connection ${err}`));
 
 app.get("/", (req, res) => {
   res.send("Welcome to full stack todo app!");
